@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { SignInUserDto } from './dto/signin-user.dto';
 import AppError from 'src/error/AppError';
 import * as bcrypt from 'bcrypt';
+import { userReturn } from 'src/schemas/User';
 
 @Injectable()
 export class AuthService {
@@ -36,5 +37,13 @@ export class AuthService {
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
+  }
+
+  async getProfile(id: number) {
+    const user = await this.usersRepository.findOneBy({
+      id,
+    });
+
+    return userReturn.parse(user);
   }
 }
