@@ -13,6 +13,7 @@ import { userCreate } from 'src/schemas/User';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
+  exports: [TypeOrmModule],
   controllers: [UserController],
   providers: [UserService],
 })

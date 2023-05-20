@@ -12,6 +12,7 @@ export class UserService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
+
   async create(createUserDto: CreateUserDto) {
     const emailAlreadyExists = await this.usersRepository.exist({
       where: {

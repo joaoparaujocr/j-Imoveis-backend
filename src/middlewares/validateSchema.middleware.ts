@@ -7,7 +7,7 @@ const validateSchema =
 
     if (!result.success) {
       const formatted = result.error.format();
-      return res.json(formatted).status(400);
+      return res.status(422).json(formatted);
     }
 
     req.body = result.data;
