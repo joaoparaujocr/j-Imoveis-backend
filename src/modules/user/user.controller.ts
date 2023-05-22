@@ -7,13 +7,12 @@ import {
   Param,
   Delete,
   Res,
-  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Response } from 'express';
-import { Public } from 'src/decorators/publicRoutes.decorator';
+import { Public } from './../../decorators/publicRoutes.decorator';
 
 @Controller('user')
 export class UserController {
