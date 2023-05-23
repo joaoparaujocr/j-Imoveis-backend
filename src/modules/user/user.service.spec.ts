@@ -3,7 +3,12 @@ import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { userMock } from './../../mocks/user';
+import {
+  userCreateMock,
+  userReturnMock,
+  userSaveMock,
+} from './../../mocks/user';
+import AppError from './../../error/AppError';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -15,7 +20,10 @@ describe('UserService', () => {
         UserService,
         {
           provide: getRepositoryToken(User),
-          useValue: {},
+          useValue: {
+            exist: jest.fn(),
+            save: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -29,9 +37,35 @@ describe('UserService', () => {
     expect(userRepository).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should create a new user', () => {
-      const result = userService.create(userMock);
+  describe('create user', () => {
+    it('should create a new user', async () => {
+      jest
+        .spyOn(userRepository, 'exist')
+        .mockReturnValue(Promise.resolve(false));
+      jest
+        .spyOn(userRepository, 'save')
+        .mockReturnValue(Promise.resolve(userSaveMock as unknown as User));
+
+      const result = await userService.create(userCreateMock);
+
+      expect(userRepository.exist).toBeCalledTimes(1);
+      expect(userRepository.save).toBeCalledTimes(1);
+      expect(result).toEqual(userReturnMock);
+    });
+
+    it('should generate a user error already exists', async () => {
+      jest
+        .spyOn(userRepository, 'exist')
+        .mockReturnValue(Promise.resolve(true));
+
+      try {
+        await userService.create(userCreateMock);
+      } catch (error) {
+        expect(userRepository.exist).toBeCalledTimes(1);
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.message).toBe('Email already exists.');
+        expect(error.status).toBe(409);
+      }
     });
   });
 });

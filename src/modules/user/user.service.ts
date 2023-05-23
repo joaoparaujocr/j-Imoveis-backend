@@ -19,6 +19,7 @@ export class UserService {
         email: createUserDto.email,
       },
     });
+
     if (emailAlreadyExists) {
       throw new AppError('Email already exists.', 409);
     }
