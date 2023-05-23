@@ -37,7 +37,7 @@ describe('UserService', () => {
     expect(userRepository).toBeDefined();
   });
 
-  describe('create user', () => {
+  describe('create user service', () => {
     it('should create a new user', async () => {
       jest
         .spyOn(userRepository, 'exist')

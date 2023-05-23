@@ -11,7 +11,6 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Response } from 'express';
 import { Public } from './../../decorators/publicRoutes.decorator';
 
 @Controller('user')
@@ -20,10 +19,9 @@ export class UserController {
 
   @Public()
   @Post()
-  async create(@Res() res: Response, @Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto) {
     const userCreated = await this.userService.create(createUserDto);
-
-    res.status(201).json(userCreated);
+    return userCreated;
   }
 
   @Get()
