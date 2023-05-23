@@ -4,9 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { SignInUserDto } from './dto/signin-user.dto';
-import AppError from 'src/error/AppError';
+import AppError from '../../error/AppError';
 import * as bcrypt from 'bcrypt';
-import { userReturn } from 'src/schemas/User';
+import { userReturn } from './../../schemas/User';
 
 @Injectable()
 export class AuthService {
@@ -23,13 +23,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new AppError('Incorrect email or password', 400);
+      throw new AppError('Incorrect email or password', 401);
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      throw new AppError('Incorrect email or password', 400);
+      throw new AppError('Incorrect email or password', 401);
     }
 
     const payload = { name: user.name, id: user.id };

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { describe } from 'node:test';
 import { userCreateMock, userReturnMock } from './../../mocks/user';
 import AppError from './../../error/AppError';
 

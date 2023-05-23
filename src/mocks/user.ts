@@ -1,7 +1,13 @@
-export const userCreateMock = {
-  name: 'João',
+import * as bcrypt from 'bcrypt';
+
+export const userLogin = {
   email: 'araujo1@email.com',
   password: '12345678',
+};
+
+export const userCreateMock = {
+  ...userLogin,
+  name: 'João',
 };
 
 export const userReturnMock = {
@@ -17,5 +23,5 @@ export const userReturnMock = {
 
 export const userSaveMock = {
   ...userReturnMock,
-  password: '12345678',
+  password: bcrypt.hashSync(userCreateMock.password, 10),
 };
