@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { userLogin, userSaveMock } from './../../mocks/user';
+import { userLogin, userReturnMock, userSaveMock } from './../../mocks/user';
 import AppError from './../../error/AppError';
 
 describe('AuthService', () => {
@@ -83,6 +83,17 @@ describe('AuthService', () => {
         expect(error.message).toBe('Incorrect email or password');
         expect(error.status).toBe(401);
       }
+    });
+
+    it('should be possible to get the profile', async () => {
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockResolvedValue(Promise.resolve(userSaveMock as unknown as User));
+
+      const result = await authService.getProfile(1);
+
+      expect(userRepository.findOneBy).toBeCalledTimes(1);
+      expect(result).toEqual(userReturnMock);
     });
   });
 });
