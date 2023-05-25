@@ -38,7 +38,7 @@ describe('AuthService', () => {
     expect(userRepository).toBeDefined();
   });
 
-  describe('sign in auth service', () => {
+  describe('auth service', () => {
     it('should be possible to login', async () => {
       const token = 'token';
       jest
@@ -62,6 +62,7 @@ describe('AuthService', () => {
       try {
         await authService.signIn(userLogin);
       } catch (error) {
+        expect(userRepository.findOne).toBeCalledTimes(1);
         expect(error).toBeInstanceOf(AppError);
         expect(error.message).toBe('Incorrect email or password');
         expect(error.status).toBe(401);
@@ -79,6 +80,7 @@ describe('AuthService', () => {
           password: 'SenhaIncorret@a1234$',
         });
       } catch (error) {
+        expect(userRepository.findOne).toBeCalledTimes(1);
         expect(error).toBeInstanceOf(AppError);
         expect(error.message).toBe('Incorrect email or password');
         expect(error.status).toBe(401);
@@ -94,6 +96,21 @@ describe('AuthService', () => {
 
       expect(userRepository.findOneBy).toBeCalledTimes(1);
       expect(result).toEqual(userReturnMock);
+    });
+
+    it('should return that the user was not found', async () => {
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockResolvedValue(Promise.resolve(null));
+
+      try {
+        await authService.getProfile(4);
+      } catch (error) {
+        expect(userRepository.findOneBy).toBeCalledTimes(1);
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.message).toBe('User not found');
+        expect(error.status).toBe(404);
+      }
     });
   });
 });

@@ -1,17 +1,11 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Res,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInUserDto } from './dto/signin-user.dto';
-import { Request, Response } from 'express';
-import { AuthGuard } from './auth.guard';
 import { Public } from './../../decorators/publicRoutes.decorator';
+import {
+  RequestUser,
+  RequestUserType,
+} from './../../decorators/requestUser.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -19,16 +13,15 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  async signIn(@Res() res: Response, @Body() signInUser: SignInUserDto) {
+  async signIn(@Body() signInUser: SignInUserDto) {
     const token = await this.authService.signIn(signInUser);
-    return res.status(200).json(token);
+    return token;
   }
 
   @Get('profile')
-  async getProfile(@Req() req: Request, @Res() res: Response) {
-    const reqId = req.user.id;
-
+  async getProfile(@RequestUser() req: RequestUserType) {
+    const reqId = req.id;
     const user = await this.authService.getProfile(reqId);
-    return res.json(user);
+    return user;
   }
 }

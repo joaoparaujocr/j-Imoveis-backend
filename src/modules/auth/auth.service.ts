@@ -44,6 +44,10 @@ export class AuthService {
       id,
     });
 
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
     return userReturn.parse(user);
   }
 }
