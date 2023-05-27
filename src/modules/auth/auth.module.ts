@@ -5,6 +5,8 @@ import { UserModule } from './../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Module({
   controllers: [AuthController],
