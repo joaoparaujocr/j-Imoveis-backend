@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { userReturn } from './../../schemas/User';
 import AppError from './../../error/AppError';
+import { PaginateQuery, paginate } from 'nestjs-paginate';
 
 @Injectable()
 export class UserService {
@@ -29,8 +30,17 @@ export class UserService {
     return userReturn.parse(user);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(query: PaginateQuery, isAdmin: boolean) {
+    if (!isAdmin) {
+      throw new AppError('You do not have permission for this feature', 401);
+    }
+
+    const users = paginate(query, this.usersRepository, {
+      sortableColumns: ['createdAt', 'deletedAt', 'updatedAt', 'id', 'name'],
+      defaultSortBy: [['id', 'ASC']],
+    });
+
+    return users;
   }
 
   findOne(id: number) {

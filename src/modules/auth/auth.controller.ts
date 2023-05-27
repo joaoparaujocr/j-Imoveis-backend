@@ -20,7 +20,7 @@ export class AuthController {
 
   @Get('profile')
   async getProfile(@RequestUser() req: RequestUserType) {
-    const reqId = req.id;
+    const reqId = req.user.id;
     const user = await this.authService.getProfile(reqId);
     return user;
   }
