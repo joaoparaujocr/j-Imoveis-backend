@@ -99,5 +99,28 @@ describe('AuthController', () => {
         expect(error.status).toBe(404);
       }
     });
+
+    it('should prevent a user without a token from accessing the route', async () => {
+      jest.spyOn(authService, 'getProfile').mockRejectedValueOnce({
+        statusCode: 401,
+        timestamp: '2023-05-28T01:17:05.124Z',
+        path: '/auth/profile',
+      });
+
+      try {
+        await authController.getProfile({
+          user: {
+            id: userReturnMock.id,
+            name: userReturnMock.name,
+          },
+        } as RequestUserType);
+      } catch (error) {
+        expect(error).toEqual({
+          statusCode: 401,
+          timestamp: '2023-05-28T01:17:05.124Z',
+          path: '/auth/profile',
+        });
+      }
+    });
   });
 });
