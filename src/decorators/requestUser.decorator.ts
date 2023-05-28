@@ -7,9 +7,8 @@ export interface RequestUserType extends Request {
 
 export const RequestUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
-    request.user;
+    const request = ctx.switchToHttp().getRequest() as RequestUserType;
 
-    return request as RequestUserType;
+    return request;
   },
 );
