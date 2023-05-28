@@ -30,4 +30,16 @@ export const userCreateAdmin = {
   email: 'araujoadmin@email.com',
   password: '12345678',
   name: 'João Admin',
+  isAdmin: true,
+};
+
+export const userAdminReturnMock = {
+  id: 2,
+  email: userCreateAdmin.email,
+  name: userCreateAdmin.name,
+  isAdmin: true,
+  isActive: true,
+  createdAt: new Date(Date.now()),
+  updatedAt: new Date(Date.now()),
+  deletedAt: null,
 };

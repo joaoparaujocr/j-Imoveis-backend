@@ -32,7 +32,9 @@ export class AuthService {
       throw new AppError('Incorrect email or password', 401);
     }
 
-    const payload = { name: user.name, id: user.id };
+    const { name, id } = user;
+
+    const payload = { name, id };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
