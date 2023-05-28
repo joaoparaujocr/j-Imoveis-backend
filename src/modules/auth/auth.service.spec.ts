@@ -59,6 +59,7 @@ describe('AuthService', () => {
       jest
         .spyOn(userRepository, 'findOne')
         .mockReturnValue(Promise.resolve(null));
+
       try {
         await authService.signIn(userLogin);
       } catch (error) {

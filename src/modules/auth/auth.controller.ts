@@ -15,6 +15,7 @@ export class AuthController {
   @Post('login')
   async signIn(@Body() signInUser: SignInUserDto) {
     const token = await this.authService.signIn(signInUser);
+
     return token;
   }
 
@@ -22,6 +23,7 @@ export class AuthController {
   async getProfile(@RequestUser() req: RequestUserType) {
     const reqId = req.user.id;
     const user = await this.authService.getProfile(reqId);
+
     return user;
   }
 }
