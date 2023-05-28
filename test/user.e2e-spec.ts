@@ -113,5 +113,27 @@ describe('UserController (e2e)', () => {
         sortBy: [['id', 'ASC']],
       });
     });
+
+    it('should not be possible to list all users without token', async () => {
+      const { body, statusCode } = await request(app.getHttpServer()).get(
+        '/user',
+      );
+
+      expect(statusCode).toBe(401);
+      expect(body).toEqual({
+        statusCode: 401,
+        timestamp: body.timestamp,
+        path: '/user',
+      });
+    });
+
+    it('should not be possible to list all users with a default user', async () => {
+      const { body, statusCode } = await request(app.getHttpServer())
+        .get('/user')
+        .set('Authorization', `Bearer ${tokenUser}`);
+
+      expect(statusCode).toBe(401);
+      expect(body.message).toBe('You do not have permission for this feature');
+    });
   });
 });
