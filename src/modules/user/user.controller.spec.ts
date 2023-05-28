@@ -8,6 +8,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { RequestUserType } from './../../decorators/requestUser.decorator';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -26,6 +27,7 @@ describe('UserController', () => {
           provide: UserService,
           useValue: {
             create: jest.fn(),
+            findAll: jest.fn(),
           },
         },
         {
@@ -49,7 +51,7 @@ describe('UserController', () => {
     expect(userRepository).toBeDefined();
   });
 
-  describe('create user controller', () => {
+  describe('user controller', () => {
     it('should be able to create a user', async () => {
       jest
         .spyOn(userService, 'create')
@@ -73,6 +75,26 @@ describe('UserController', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.message).toBe('Email already exists.');
         expect(error.status).toBe(409);
+      }
+    });
+
+    it('should not be possible to search all users with a non-admin', async () => {
+      jest
+        .spyOn(userService, 'findAll')
+        .mockRejectedValueOnce(
+          new AppError('You do not have permission for this feature', 401),
+        );
+
+      try {
+        await userController.findAll({ path: '/user' }, {
+          user: { isAdmin: false },
+        } as RequestUserType);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.message).toBe(
+          'You do not have permission for this feature',
+        );
+        expect(error.status).toBe(401);
       }
     });
   });

@@ -37,7 +37,7 @@ describe('UserService', () => {
     expect(userRepository).toBeDefined();
   });
 
-  describe('create user service', () => {
+  describe('user service', () => {
     it('should create a new user', async () => {
       jest
         .spyOn(userRepository, 'exist')
@@ -65,6 +65,18 @@ describe('UserService', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.message).toBe('Email already exists.');
         expect(error.status).toBe(409);
+      }
+    });
+
+    it('should not be possible to search all users with a non-admin', async () => {
+      try {
+        await userService.findAll({ path: '/user' }, false);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.message).toBe(
+          'You do not have permission for this feature',
+        );
+        expect(error.status).toBe(401);
       }
     });
   });
