@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { APP_GUARD, HttpAdapterHost } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, HttpAdapterHost } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AllExceptionsFilter } from './../src/filters/handleError.filter';
@@ -15,6 +15,7 @@ import {
 import { AuthModule } from './../src/modules/auth/auth.module';
 import { AuthGuard } from './../src/modules/auth/auth.guard';
 import { getToken } from './commands/getToken';
+import { LoggerUserInterceptor } from './../src/interceptors/loggerUser.interceptor';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -37,6 +38,11 @@ describe('UserController (e2e)', () => {
           provide: APP_GUARD,
           useExisting: AuthGuard,
         },
+        {
+          provide: APP_INTERCEPTOR,
+          useClass: LoggerUserInterceptor,
+        },
+        LoggerUserInterceptor,
         AuthGuard,
       ],
     }).compile();
