@@ -3,31 +3,50 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { userCreateMock, userReturnMock } from './../../mocks/user';
 import AppError from './../../error/AppError';
+import { IsAdminInterceptor } from './../../interceptors/isAdmin.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('UserController', () => {
   let userController: UserController;
   let userService: UserService;
+  let userRepository: Repository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
         {
+          provide: APP_INTERCEPTOR,
+          useExisting: IsAdminInterceptor,
+        },
+        {
           provide: UserService,
           useValue: {
             create: jest.fn(),
           },
         },
+        {
+          provide: getRepositoryToken(User),
+          useValue: {
+            findOneBy: jest.fn(),
+          },
+        },
+        IsAdminInterceptor,
       ],
     }).compile();
 
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   it('should be defined', () => {
     expect(userController).toBeDefined();
     expect(userService).toBeDefined();
+    expect(userRepository).toBeDefined();
   });
 
   describe('create user controller', () => {

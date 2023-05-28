@@ -22,7 +22,7 @@ export async function createUserDB(app: INestApplication) {
 }
 
 export async function createUserAdmin(app: INestApplication) {
-  const { body, statusCode } = await request(app.getHttpServer())
+  const { body } = await request(app.getHttpServer())
     .post('/user')
     .send(userCreateAdmin);
 

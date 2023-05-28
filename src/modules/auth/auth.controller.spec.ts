@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { userLogin, userReturnMock } from './../../mocks/user';
 import AppError from './../../error/AppError';
+import { RequestUserType } from 'src/decorators/requestUser.decorator';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -69,9 +70,11 @@ describe('AuthController', () => {
         .mockReturnValue(Promise.resolve(userReturnMock));
 
       const result = await authController.getProfile({
-        id: userReturnMock.id,
-        name: userReturnMock.name,
-      });
+        user: {
+          id: userReturnMock.id,
+          name: userReturnMock.name,
+        },
+      } as RequestUserType);
 
       expect(authService.getProfile).toBeCalledTimes(1);
       expect(result).toEqual(userReturnMock);
@@ -84,9 +87,11 @@ describe('AuthController', () => {
 
       try {
         await authController.getProfile({
-          id: userReturnMock.id,
-          name: userReturnMock.name,
-        });
+          user: {
+            id: userReturnMock.id,
+            name: userReturnMock.name,
+          },
+        } as RequestUserType);
       } catch (error) {
         expect(authService.getProfile).toBeCalledTimes(1);
         expect(error).toBeInstanceOf(AppError);
