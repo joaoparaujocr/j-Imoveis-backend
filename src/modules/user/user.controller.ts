@@ -37,8 +37,10 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@RequestUser() req: RequestUserType, @Param('id') id: string) {
+    const userLogger = req.user;
+
+    return this.userService.findOne(+id, userLogger);
   }
 
   @Patch(':id')

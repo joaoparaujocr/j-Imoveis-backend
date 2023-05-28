@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { userReturn } from './../../schemas/User';
 import AppError from './../../error/AppError';
 import { PaginateQuery, paginate } from 'nestjs-paginate';
+import { RequestUserDto } from './dto/request-user.dto';
 
 @Injectable()
 export class UserService {
@@ -35,16 +36,44 @@ export class UserService {
       throw new AppError('You do not have permission for this feature', 401);
     }
 
-    const users = paginate(query, this.usersRepository, {
+    const select = [
+      'entity.id',
+      'entity.name',
+      'entity.email',
+      'entity.createdAt',
+      'entity.updatedAt',
+      'entity.deletedAt',
+      'entity.isAdmin',
+      'entity.isActive',
+    ];
+
+    const queryBuilder = this.usersRepository.createQueryBuilder('entity');
+
+    queryBuilder.select(select);
+
+    const users = await paginate(query, queryBuilder, {
       sortableColumns: ['createdAt', 'deletedAt', 'updatedAt', 'id', 'name'],
       defaultSortBy: [['id', 'ASC']],
+      select: ['email', 'name'],
     });
 
     return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number, userLogger: RequestUserDto) {
+    if (!userLogger.isAdmin && userLogger.id !== id) {
+      throw new AppError('You do not have permission for this feature', 401);
+    }
+
+    const user = await this.usersRepository.findOneBy({
+      id,
+    });
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    return userReturn.parse(user);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
