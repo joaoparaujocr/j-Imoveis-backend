@@ -13,11 +13,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from './../../decorators/publicRoutes.decorator';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
-import { IsAdminInterceptor } from 'src/interceptors/isAdmin.interceptor';
+import { IsAdminInterceptor } from './../../interceptors/isAdmin.interceptor';
 import {
   RequestUser,
   RequestUserType,
-} from 'src/decorators/requestUser.decorator';
+} from './../../decorators/requestUser.decorator';
 
 @Controller('user')
 export class UserController {

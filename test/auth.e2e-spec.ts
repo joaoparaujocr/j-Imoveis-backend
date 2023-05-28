@@ -6,7 +6,7 @@ import { userLogin } from '../src/mocks/user';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './../src/modules/user/entities/user.entity';
 import { AuthGuard } from './../src/modules/auth/auth.guard';
-import createUserDB from './commands/createUser';
+import { createUserDB } from './commands/createUser';
 import { APP_GUARD, HttpAdapterHost } from '@nestjs/core';
 import { AllExceptionsFilter } from './../src/filters/handleError.filter';
 

@@ -7,8 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Observable } from 'rxjs';
 import { RequestUserType } from 'src/decorators/requestUser.decorator';
-import AppError from 'src/error/AppError';
-import { User } from 'src/modules/user/entities/user.entity';
+import AppError from './../error/AppError';
+import { User } from './../modules/user/entities/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

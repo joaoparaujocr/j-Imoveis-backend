@@ -25,3 +25,9 @@ export const userSaveMock = {
   ...userReturnMock,
   password: bcrypt.hashSync(userCreateMock.password, 10),
 };
+
+export const userCreateAdmin = {
+  email: 'araujoadmin@email.com',
+  password: '12345678',
+  name: 'João Admin',
+};
