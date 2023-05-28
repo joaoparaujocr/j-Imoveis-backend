@@ -3,7 +3,7 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { userCreateMock, userReturnMock } from './../../mocks/user';
 import AppError from './../../error/AppError';
-import { IsAdminInterceptor } from './../../interceptors/isAdmin.interceptor';
+import { LoggerUserInterceptor } from '../../interceptors/loggerUser.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -21,7 +21,7 @@ describe('UserController', () => {
       providers: [
         {
           provide: APP_INTERCEPTOR,
-          useExisting: IsAdminInterceptor,
+          useExisting: LoggerUserInterceptor,
         },
         {
           provide: UserService,
@@ -36,7 +36,7 @@ describe('UserController', () => {
             findOneBy: jest.fn(),
           },
         },
-        IsAdminInterceptor,
+        LoggerUserInterceptor,
       ],
     }).compile();
 

@@ -6,14 +6,12 @@ import {
   Patch,
   Param,
   Delete,
-  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from './../../decorators/publicRoutes.decorator';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
-import { IsAdminInterceptor } from './../../interceptors/isAdmin.interceptor';
 import {
   RequestUser,
   RequestUserType,
@@ -30,7 +28,6 @@ export class UserController {
     return userCreated;
   }
 
-  @UseInterceptors(IsAdminInterceptor)
   @Get()
   findAll(
     @Paginate() query: PaginateQuery,

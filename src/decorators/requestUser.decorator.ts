@@ -1,7 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
+import { RequestUserDto } from './../modules/user/dto/request-user.dto';
 export interface RequestUserType extends Request {
-  user: { id: number; name: string; isAdmin: boolean };
+  user: RequestUserDto;
 }
 
 export const RequestUser = createParamDecorator(
