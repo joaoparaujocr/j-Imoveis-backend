@@ -107,7 +107,26 @@ export class UserService {
     return userReturn.parse(userUpdate);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number, userLogger: RequestUserDto) {
+    if (!userLogger.isAdmin && userLogger.id !== id) {
+      throw new AppError('You do not have permission for this feature', 401);
+    }
+
+    await this.usersRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        isActive: false,
+      })
+      .where('id = :id', { id })
+      .execute();
+
+    await this.usersRepository
+      .createQueryBuilder()
+      .softDelete()
+      .where('id = :id', { id })
+      .execute();
+
+    return `User delete`;
   }
 }

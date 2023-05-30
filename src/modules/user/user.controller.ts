@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -37,25 +38,33 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@RequestUser() req: RequestUserType, @Param('id') id: string) {
+  findOne(
+    @RequestUser() req: RequestUserType,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const userLogger = req.user;
 
-    return this.userService.findOne(+id, userLogger);
+    return this.userService.findOne(id, userLogger);
   }
 
   @Patch(':id')
   update(
     @RequestUser() req: RequestUserType,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     const userLogger = req.user;
 
-    return this.userService.update(+id, updateUserDto, userLogger);
+    return this.userService.update(id, updateUserDto, userLogger);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(
+    @RequestUser() req: RequestUserType,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    const userLogger = req.user;
+
+    return this.userService.remove(id, userLogger);
   }
 }
