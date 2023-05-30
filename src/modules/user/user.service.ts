@@ -76,8 +76,35 @@ export class UserService {
     return userReturn.parse(user);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+    userLogger: RequestUserDto,
+  ) {
+    if (!userLogger.isAdmin && userLogger.id !== id) {
+      throw new AppError('You do not have permission for this feature', 401);
+    }
+
+    const user = await this.usersRepository.findOneBy({
+      id,
+    });
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    await this.usersRepository.update(
+      {
+        id,
+      },
+      updateUserDto,
+    );
+
+    const userUpdate = await this.usersRepository.findOneBy({
+      id,
+    });
+
+    return userReturn.parse(userUpdate);
   }
 
   remove(id: number) {

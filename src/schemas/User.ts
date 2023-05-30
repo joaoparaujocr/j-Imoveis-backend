@@ -23,5 +23,6 @@ const userCreate = user
   })
   .partial({ isAdmin: true });
 const userReturn = user.omit({ password: true });
+const userUpdate = userCreate.partial().omit({ password: true, isAdmin: true });
 
-export { user, userCreate, userReturn };
+export { user, userCreate, userReturn, userUpdate };

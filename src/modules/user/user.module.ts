@@ -9,7 +9,7 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import validateSchema from './../../middlewares/validateSchema.middleware';
-import { userCreate } from './../../schemas/User';
+import { userCreate, userUpdate } from './../../schemas/User';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -22,5 +22,9 @@ export class UserModule implements NestModule {
     consumer
       .apply(validateSchema(userCreate))
       .forRoutes({ path: 'user', method: RequestMethod.POST });
+    consumer.apply(validateSchema(userUpdate)).forRoutes({
+      path: 'user/:id',
+      method: RequestMethod.PATCH,
+    });
   }
 }

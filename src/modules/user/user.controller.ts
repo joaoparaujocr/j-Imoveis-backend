@@ -44,8 +44,14 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(
+    @RequestUser() req: RequestUserType,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const userLogger = req.user;
+
+    return this.userService.update(+id, updateUserDto, userLogger);
   }
 
   @Delete(':id')
