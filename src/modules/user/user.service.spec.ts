@@ -9,6 +9,7 @@ import {
   userSaveMock,
 } from './../../mocks/user';
 import AppError from './../../error/AppError';
+import { userAdminReturnMock } from './../../mocks/user';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -23,6 +24,7 @@ describe('UserService', () => {
           useValue: {
             exist: jest.fn(),
             save: jest.fn(),
+            findOneBy: jest.fn(),
           },
         },
       ],
@@ -78,6 +80,88 @@ describe('UserService', () => {
         );
         expect(error.status).toBe(401);
       }
+    });
+
+    it('should return that the user does not exist', async () => {
+      const { id, name, email, isActive } = userReturnMock;
+
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValue(Promise.resolve(null));
+
+      try {
+        await userService.findOne(45, {
+          id,
+          name,
+          email,
+          isActive,
+          isAdmin: true,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.message).toBe('User not found');
+        expect(error.status).toBe(404);
+      }
+    });
+
+    it('should return an error if the user is not an admin and also not the owner of the resource', async () => {
+      const { id, name, email, isActive, isAdmin } = userReturnMock;
+
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValue(Promise.resolve(null));
+
+      try {
+        await userService.findOne(45, {
+          id,
+          name,
+          email,
+          isActive,
+          isAdmin,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.message).toBe(
+          'You do not have permission for this feature',
+        );
+        expect(error.status).toBe(401);
+      }
+    });
+
+    it('it should be possible to update the user information being admin', async () => {
+      const { id, name, email, isActive, isAdmin } = userAdminReturnMock;
+
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValue(Promise.resolve(userReturnMock as unknown as User));
+
+      const res = await userService.findOne(1, {
+        id,
+        name,
+        email,
+        isActive,
+        isAdmin,
+      });
+
+      expect(res).toEqual(userReturnMock);
+    });
+
+    it('it must be possible to update the information of the user being the owner', async () => {
+      const { id, name, email, isActive, isAdmin } = userReturnMock;
+
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValue(Promise.resolve(userReturnMock as unknown as User));
+
+      const res = await userService.findOne(1, {
+        id,
+        name,
+        email,
+        isActive,
+        isAdmin,
+      });
+
+      expect(res).toEqual(userReturnMock);
     });
   });
 });
