@@ -85,8 +85,8 @@ export class UserService {
       throw new AppError('You do not have permission for this feature', 401);
     }
 
-    const user = await this.usersRepository.findOneBy({
-      id,
+    const user = await this.usersRepository.exist({
+      where: { id },
     });
 
     if (!user) {

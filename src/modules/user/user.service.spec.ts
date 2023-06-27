@@ -4,12 +4,14 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import {
+  userCreateAdmin,
   userCreateMock,
   userReturnMock,
   userSaveMock,
 } from './../../mocks/user';
 import AppError from './../../error/AppError';
 import { userAdminReturnMock } from './../../mocks/user';
+import { RequestUserDto } from './dto/request-user.dto';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -25,6 +27,7 @@ describe('UserService', () => {
             exist: jest.fn(),
             save: jest.fn(),
             findOneBy: jest.fn(),
+            update: jest.fn(),
           },
         },
       ],
@@ -162,6 +165,73 @@ describe('UserService', () => {
       });
 
       expect(res).toEqual(userReturnMock);
+    });
+
+    it('should not be possible to update the information if the user is not admin and not the owner of the information', async () => {
+      try {
+        await userService.update(
+          1,
+          {
+            name: 'Test',
+          },
+          {
+            id: 2,
+            isAdmin: false,
+          } as RequestUserDto,
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.message).toBe(
+          'You do not have permission for this feature',
+        );
+        expect(error.status).toBe(401);
+      }
+    });
+
+    it('should return an error if the id does not exist', async () => {
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValue(Promise.resolve(null));
+      try {
+        await userService.update(
+          1,
+          {
+            name: 'Test',
+          },
+          {
+            id: 2,
+            isAdmin: true,
+          } as RequestUserDto,
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.message).toBe('User not found');
+        expect(error.status).toBe(404);
+      }
+    });
+
+    it('must update the user with the admin', async () => {
+      jest
+        .spyOn(userRepository, 'exist')
+        .mockReturnValue(Promise.resolve(true));
+      jest.spyOn(userRepository, 'findOneBy').mockReturnValue(
+        Promise.resolve({
+          ...userAdminReturnMock,
+          password: 'dedeeded',
+          deletedAt: new Date(),
+        } as User),
+      );
+
+      await userService.update(
+        1,
+        {
+          name: 'Nome editado',
+        },
+        {
+          id: 1,
+          isAdmin: true,
+        } as RequestUserDto,
+      );
     });
   });
 });
