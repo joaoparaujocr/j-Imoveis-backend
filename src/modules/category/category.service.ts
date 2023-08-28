@@ -1,26 +1,45 @@
+import { Category } from './entities/category.entity';
 import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import AppError from 'src/error/AppError';
 
 @Injectable()
 export class CategoryService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(
+    @InjectRepository(Category)
+    private categoriesRepository: Repository<Category>,
+  ) {}
+
+  async create(createCategoryDto: CreateCategoryDto, isAdmin: boolean) {
+    if (!isAdmin) {
+      throw new AppError('You do not have permission for this feature', 401);
+    }
+
+    const alreadyExists = await this.categoriesRepository.exist({
+      where: {
+        name: createCategoryDto.name,
+      },
+    });
+
+    if (alreadyExists) {
+      throw new AppError('This category already exists', 401);
+    }
+
+    const categoryCreated = await this.categoriesRepository.save({
+      ...createCategoryDto,
+    });
+
+    console.log(categoryCreated);
+
+    return categoryCreated;
   }
 
-  findAll() {
-    return `This action returns all category`;
-  }
+  async findAll() {
+    const allCategories = await this.categoriesRepository.find();
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
-  }
-
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+    return allCategories;
   }
 }

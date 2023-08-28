@@ -4,7 +4,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import {
-  userCreateAdmin,
   userCreateMock,
   userReturnMock,
   userSaveMock,
